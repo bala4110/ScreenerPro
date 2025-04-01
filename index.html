@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Screener Pro - Stock Market Analysis Tool</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        ul {
+            list-style: none;
+        }
+        
+        /* Theme Variables */
+        :root {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: white;
+            --header-bg: #2c3e50;
+            --primary-color: #3498db;
+            --positive-color: #27ae60;
+            --negative-color: #e74c3c;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --header-bg: #0d1b2a;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .logo span {
+            color: #e74c3c;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        nav ul li {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav ul li:hover {
+            background-color: #34495e;
+            cursor: pointer;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-height: 44px;
+        }
+        
+        .btn-outline {
+            border: 1px solid #3498db;
+            color: #3498db;
+            background: transparent;
+        }
+        
+        .btn-outline:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 2rem;
+            background-color: var(--card-bg);
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+
+        /* Market Overview */
+        .market-overview {
+            padding: 3rem 2rem;
+            background-color: var(--bg-color);
+        }
+        
+        .market-overview h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+        
+        .indices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .index-card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .index-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .index-card .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .index-card .change {
+            font-size: 1.1rem;
+        }
+        
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            padding: 3rem 2rem;
+            background-color: var(--header-bg);
+            color: white;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .page-header img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Screener Section */
+        .screener {
+            padding: 4rem 2rem;
+            background-color: var(--bg-color);
+        }
+        
+        .screener-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .screener-header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .screener-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .screener-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        
+        .screener-tab.active {
+            background-color: #3498db;
+        }
+        
+        .screener-content {
+            padding: 2rem;
+            min-height: 400px;
+            display: none;
+        }
+        
+        .screener-content.active {
+            display: block;
+        }
+        
+        .custom-screener-info, .technical-screener-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .custom-screener-info img, .technical-screener-info img {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        /* Stock Table */
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stock-table th, .stock-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .stock-table th {
+            background-color: var(--card-bg);
+            font-weight: 600;
+        }
+        
+        .stock-table tr:hover {
+            background-color: var(--bg-color);
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .neutral {
+            color: #7f8c8d;
+        }
+        
+        /* Watchlist Section */
+        .watchlist {
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .watchlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .watchlist-header h3 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .add-stock {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .add-stock input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Portfolio Section */
+        .portfolio {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .portfolio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .portfolio-header h2 {
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+        
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-card h3 {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-card p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .portfolio-allocation {
+            margin-bottom: 2rem;
+        }
+        
+        .portfolio-allocation h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .allocation-chart {
+            height: 300px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        /* Contact Section */
+        .contact {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-header h2 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .contact-card {
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .contact-card h3 {
+            font-size: 1.2rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-card p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-form {
+            margin-top: 2rem;
+        }
+        
+        .contact-form h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .faq {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .faq-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #3498db;
+        }
+        
+        /* Screener Controls */
+        .screener-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-options select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 3rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #3498db;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-column ul li:hover {
+            color: #3498db;
+            cursor: pointer;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: #34495e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: #3498db;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #34495e;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Mobile Navigation */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Toast Notifications */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 4px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast-notification.show {
+            opacity: 1;
+        }
+        
+        .toast-info {
+            background: #3498db;
+        }
+        
+        .toast-success {
+            background: #27ae60;
+        }
+        
+        .toast-error {
+            background: #e74c3c;
+        }
+        
+        .toast-close {
+            margin-left: 15px;
+            cursor: pointer;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            
+            .logo {
+                order: 1;
+            }
+            
+            .menu-toggle {
+                display: block;
+                order: 2;
+                margin-left: auto;
+            }
+            
+            nav {
+                order: 4;
+                width: 100%;
+            }
+            
+            .auth-buttons {
+                order: 3;
+                width: auto;
+                margin-left: auto;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+                display: none;
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            nav ul li {
+                width: 100%;
+                text-align: center;
+                padding: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .stock-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .modal-content {
+                width: 90%;
+                max-width: 90%;
+                padding: 1rem;
+            }
+            
+            .form-group input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .custom-screener-info, .technical-screener-info {
+                flex-direction: column;
+            }
+            
+            .custom-screener-info img, .technical-screener-info img {
+                width: 100%;
+            }
+        }
+        
+        /* Tablet sizes */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Stacked table layout for small screens */
+        @media (max-width: 600px) {
+            .stock-table {
+                display: block;
+            }
+            
+            .stock-table thead {
+                display: none;
+            }
+            
+            .stock-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            
+            .stock-table td {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 1rem;
+                border: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .stock-table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                margin-right: 1rem;
+            }
+        }
+        
+        /* Social icons */
+        .social-links a {
+            font-size: 0;
+            position: relative;
+        }
+        
+        .social-links a::before {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            position: absolute;
+        }
+        
+        .social-links a[title="Twitter"]::before {
+            content: "𝕏";
+            font-size: 1.2rem;
+        }
+        
+        .social-links a[title="Facebook"]::before {
+            content: "f";
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .social-links a[title="LinkedIn"]::before {
+            content: "in";
+            font-weight: bold;
+        }
+        
+        .social-links a[title="YouTube"]::before {
+            content: "▶";
+            font-size: 1.3rem;
+        }
+        
+        /* Drag and drop styles */
+        .sortable-ghost {
+            opacity: 0.5;
+            background: #c8ebfb;
+        }
+        
+        /* Connection status */
+        #connection-status {
+            display: inline-flex;
+            align-items: center;
+            background-color: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+        
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background-color: #2ecc71;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Price animations */
+        .price-up {
+            animation: priceUp 0.5s;
+        }
+        
+        .price-down {
+            animation: priceDown 0.5s;
+        }
+        
+        @keyframes priceUp {
+            0% { background-color: rgba(39, 174, 96, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        @keyframes priceDown {
+            0% { background-color: rgba(231, 76, 60, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        .highlight-flash {
+            animation: highlightFlash 1.5s;
+        }
+        
+        @keyframes highlightFlash {
+            0% { background-color: rgba(255, 255, 0, 0.3); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <a href="#landing-page" class="logo" onclick="showLandingPage()">Screener<span>Pro</span></a>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <nav>
+            <ul>
+                <li onclick="showLandingPage()">Home</li>
+                <li onclick="showScreener()">Screener</li>
+                <li onclick="showPortfolio()">Portfolio</li>
+                <li onclick="showWatchlist()">Watchlist</li>
+                <li onclick="showContact()">Contact</li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <button class="btn btn-outline" onclick="showLoginModal()">Sign In</button>
+            <button class="btn btn-primary" onclick="showSignupModal()">Register</button>
+            <button id="theme-toggle" class="btn btn-outline" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Landing Page -->
+    <section id="landing-page">
+        <div class="hero">
+            <h1>Advanced Stock Screening & Analysis</h1>
+            <p>Discover investment opportunities with our powerful stock screening tools and comprehensive market analysis.</p>
+            <div>
+                <button class="btn btn-primary" onclick="showScreener()">Start Screening</button>
+                <button class="btn btn-outline" onclick="showSignupModal()">Create Free Account</button>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>Powerful Features for Smart Investors</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Custom Screeners">
+                    <h3>Custom Screeners</h3>
+                    <p>Create and save custom screeners with hundreds of filters to find exactly what you're looking for in the market.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1535320903710-d993d3d77d29?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Portfolio Tracking">
+                    <h3>Portfolio Tracking</h3>
+                    <p>Track your investments in real-time with detailed analytics and performance metrics.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Advanced Charts">
+                    <h3>Advanced Charts</h3>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                    <p>Detailed technical analysis with drawing tools and indicators.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Market Alerts">
+                    <h3>Market Alerts</h3>
+                    <p>Set custom alerts for price movements, volume spikes, and technical patterns.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Financial Analysis">
+                    <h3>Financial Analysis</h3>
+                    <p>Comprehensive financial statements, ratios, and growth metrics for fundamental analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Watchlists">
+                    <h3>Watchlists</h3>
+                    <p>Organize and monitor your favorite stocks with customizable watchlists.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="market-overview">
+            <h2>Today's Market Overview</h2>
+            <div class="indices">
+                <div class="index-card">
+                    <h3>NIFTY 50</h3>
+                    <p class="price">22,145.50</p>
+                    <p class="change positive">+125.75 (+0.57%)</p>
+                </div>
+                <div class="index-card">
+                    <h3>SENSEX</h3>
+                    <p class="price">73,128.25</p>
+                    <p class="change positive">+385.50 (+0.53%)</p>
+                </div>
+                <div class="index-card">
+                    <h3>NIFTY BANK</h3>
+                    <p class="price">47,832.75</p>
+                    <p class="change negative">-87.25 (-0.18%)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="screener">
+            <div class="screener-controls">
+                <div class="search-box">
+                    <input type="text" id="stock-search" placeholder="Search stocks...">
+                    <button class="btn btn-outline" onclick="searchStocks()">Search</button>
+                </div>
+                <div class="filter-options">
+                    <select id="sector-filter">
+                        <option value="">All Sectors</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Energy">Energy</option>
+                        <option value="Consumer">Consumer</option>
+                        <option value="Automobile">Automobile</option>
+                        <option value="Pharmaceutical">Pharmaceutical</option>
+                        <option value="Telecom">Telecom</option>
+                    </select>
+                    <select id="price-filter">
+                        <option value="">Any Price</option>
+                        <option value="0-100">Under ₹100</option>
+                        <option value="100-500">₹100-₹500</option>
+                        <option value="500-1000">₹500-₹1000</option>
+                        <option value="1000-5000">₹1000-₹5000</option>
+                        <option value="5000-100000">₹5000+</option>
+                    </select>
+                    <select id="market-cap-filter">
+                        <option value="">Any Market Cap</option>
+                        <option value="0-1000">Small Cap (<₹1,000Cr)</option>
+                        <option value="1000-20000">Mid Cap (₹1,000-₹20,000Cr)</option>
+                        <option value="20000-100000">Large Cap (>₹20,000Cr)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="screener-container">
+                <div class="screener-header">
+                    <h3>Stock Screener</h3>
+                    <div class="screener-tabs">
+                        <div class="screener-tab active" onclick="switchTab('predefined')">Predefined</div>
+                        <div class="screener-tab" onclick="switchTab('custom')">Custom</div>
+                        <div class="screener-tab" onclick="switchTab('technical')">Technical</div>
+                    </div>
+                </div>
+                <div class="screener-content active" id="predefined-tab">
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>% Change</th>
+                                <th>Volume</th>
+                                <th>Market Cap</th>
+                                <th>Sector</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-data">
+                            <!-- Stock data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="screener-content" id="custom-tab">
+                    <div class="custom-screener-info">
+                        <img src="https://images.unsplash.com/photo-1468254095679-bbcba94a7066?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Custom Screener">
+                        <div>
+                            <h3>Create Your Custom Screener</h3>
+                            <p>Build your own screening criteria by selecting from hundreds of fundamental, technical, and financial metrics. Save your custom screeners for quick access to your preferred investment strategies.</p>
+                            <button class="btn btn-primary" style="margin-top: 1rem;">Create Custom Screener</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="screener-content" id="technical-tab">
+                    <div class="technical-screener-info">
+                        <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Technical Analysis">
+                        <div>
+                            <h3>Technical Screener</h3>
+                            <p>Screen stocks based on technical indicators like moving averages, RSI, MACD, Bollinger Bands and more. Identify chart patterns and technical setups that match your trading strategy.</p>
+                            <button class="btn btn-primary" style="margin-top: 1rem;">Technical Screener</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="watchlist">
+                <div class="watchlist-header">
+                    <h3>My Watchlist</h3>
+                    <button class="btn btn-primary" onclick="showAddStockModal()">+ Add Stock</button>
+                </div>
+                <div class="add-stock">
+                    <input type="text" id="watchlist-search" placeholder="Search for stocks to add...">
+                    <button class="btn btn-outline">Search</button>
+                </div>
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Price</th>
+                            <th>Change</th>
+                            <th>% Change</th>
+                            <th>Volume</th>
+                            <th>Market Cap</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="watchlist-items">
+                        <!-- Watchlist items will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Page (Hidden by default) -->
+    <section id="portfolio-page" style="display: none;">
+        <div class="page-header">
+            <h1>My Portfolio</h1>
+            <p>Track all your investments in one place with real-time updates and performance analytics.</p>
+            <img src="https://images.unsplash.com/photo-1535320903710-d993d3d77d29?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Portfolio Tracking">
+        </div>
+
+        <div class="portfolio">
+            <div class="portfolio-header">
+                <h2>Investment Portfolio</h2>
+                <button class="btn btn-primary" onclick="showAddHoldingModal()">+ Add Holding</button>
+            </div>
+            
+            <div class="portfolio-summary">
+                <div class="summary-card">
+                    <h3>Total Value</h3>
+                    <p>₹1,245,678</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Today's Change</h3>
+                    <p class="positive">+₹12,345 (+1.2%)</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Gain/Loss</h3>
+                    <p class="positive">+₹245,678 (+24.5%)</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Cash Balance</h3>
+                    <p>₹45,678</p>
+                </div>
+            </div>
+            
+            <div class="portfolio-allocation">
+                <h3>Asset Allocation</h3>
+                <div class="allocation-chart">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+            
+            <table class="stock-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Avg. Cost</th>
+                        <th>Current Price</th>
+                        <th>Value</th>
+                        <th>Gain/Loss</th>
+                        <th>% Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Symbol">RELIANCE</td>
+                        <td data-label="Name">Reliance Industries</td>
+                        <td data-label="Quantity">25</td>
+                        <td data-label="Avg. Cost">2,450.00</td>
+                        <td data-label="Current Price">2,845.50</td>
+                        <td data-label="Value">71,137.50</td>
+                        <td data-label="Gain/Loss" class="positive">+9,887.50</td>
+                        <td data-label="% Change" class="positive">+16.14%</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Symbol">TCS</td>
+                        <td data-label="Name">Tata Consultancy Services</td>
+                        <td data-label="Quantity">15</td>
+                        <td data-label="Avg. Cost">3,200.00</td>
+                        <td data-label="Current Price">3,712.30</td>
+                        <td data-label="Value">55,684.50</td>
+                        <td data-label="Gain/Loss" class="positive">+7,684.50</td>
+                        <td data-label="% Change" class="positive">+16.01%</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Symbol">HDFCBANK</td>
+                        <td data-label="Name">HDFC Bank</td>
+                        <td data-label="Quantity">30</td>
+                        <td data-label="Avg. Cost">1,450.00</td>
+                        <td data-label="Current Price">1,567.80</td>
+                        <td data-label="Value">47,034.00</td>
+                        <td data-label="Gain/Loss" class="positive">+3,534.00</td>
+                        <td data-label="% Change" class="positive">+8.12%</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Symbol">INFY</td>
+                        <td data-label="Name">Infosys</td>
+                        <td data-label="Quantity">40</td>
+                        <td data-label="Avg. Cost">1,350.00</td>
+                        <td data-label="Current Price">1,482.60</td>
+                        <td data-label="Value">59,304.00</td>
+                        <td data-label="Gain/Loss" class="positive">+5,304.00</td>
+                        <td data-label="% Change" class="positive">+9.82%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Watchlist Page (Hidden by default) -->
+    <section id="watchlist-page" style="display: none;">
+        <div class="page-header">
+            <h1>My Watchlist</h1>
+            <p>Monitor your favorite stocks and get real-time updates on price movements and key metrics.</p>
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Stock Watchlist">
+        </div>
+
+        <div class="watchlist-container">
+            <div class="watchlist-header">
+                <h2>Stock Watchlist</h2>
+                <button class="btn btn-primary" onclick="showAddStockModal()">+ Add Stock</button>
+            </div>
+            
+            <div class="add-stock">
+                <input type="text" id="watchlist-search" placeholder="Search for stocks to add...">
+                <button class="btn btn-outline">Search</button>
+            </div>
+            
+            <div class="watchlist-actions">
+                <button class="btn btn-outline">Create New Watchlist</button>
+                <button class="btn btn-outline">Save Changes</button>
+            </div>
+            
+            <table class="stock-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>% Change</th>
+                        <th>Volume</th>
+                        <th>Market Cap</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="watchlist-items">
+                    <tr>
+                        <td>RELIANCE</td>
+                        <td>2,845.50</td>
+                        <td class="positive">+42.75</td>
+                        <td class="positive">+1.52%</td>
+                        <td>3.2M</td>
+                        <td>19.2T</td>
+                        <td><button class="btn btn-outline" onclick="removeFromWatchlist('RELIANCE')">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>TCS</td>
+                        <td>3,712.30</td>
+                        <td class="negative">-28.45</td>
+                        <td class="negative">-0.76%</td>
+                        <td>1.8M</td>
+                        <td>14.5T</td>
+                        <td><button class="btn btn-outline" onclick="removeFromWatchlist('TCS')">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>HDFCBANK</td>
+                        <td>1,567.80</td>
+                        <td class="positive">+12.30</td>
+                        <td class="positive">+0.79%</td>
+                        <td>2.5M</td>
+                        <td>9.8T</td>
+                        <td><button class="btn btn-outline" onclick="removeFromWatchlist('HDFCBANK')">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td>BHARTIARTL</td>
+                        <td>918.45</td>
+                        <td class="negative">-7.20</td>
+                        <td class="negative">-0.78%</td>
+                        <td>1.5M</td>
+                        <td>5.2T</td>
+                        <td><button class="btn btn-outline" onclick="removeFromWatchlist('BHARTIARTL')">Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="watchlist-info">
+            <h3>About Watchlists</h3>
+            <p>Watchlists help you track stocks you're interested in without adding them to your portfolio. You can create multiple watchlists for different strategies or sectors, and set up alerts for price movements or technical indicators.</p>
+        </div>
+    </section>
+
+    <!-- Contact Page (Hidden by default) -->
+    <section id="contact-page" style="display: none;">
+        <div class="page-header">
+            <h1>Contact Us</h1>
+            <p>Have questions or need support? Our team is here to help you with any inquiries.</p>
+            <img src="https://images.unsplash.com/photo-1587563871167-1ee9c7316ef3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Customer Support">
+        </div>
+
+        <div class="contact">
+            <div class="contact-info">
+                <div class="contact-card">
+                    <h3>Customer Support</h3>
+                    <p><strong>Email:</strong> <a href="mailto:support@screenerpro.com">support@screenerpro.com</a></p>
+                    <p><strong>Phone:</strong> +91 1234567890</p>
+                    <p><strong>Hours:</strong> Mon-Fri, 9AM-6PM IST</p>
+                    <p>Our customer support team is available to help with any technical issues, account questions, or general inquiries about our platform.</p>
+                </div>
+                
+                <div class="contact-card">
+                    <h3>Business Inquiries</h3>
+                    <p><strong>Email:</strong> <a href="mailto:business@screenerpro.com">business@screenerpro.com</a></p>
+                    <p><strong>Phone:</strong> +91 1234567890</p>
+                    <p>For partnership opportunities, enterprise solutions, or media inquiries, please contact our business development team.</p>
+                </div>
+                
+                <div class="contact-card">
+                    <h3>Follow Us</h3>
+                    <p>Stay updated with our latest features, market insights, and educational content.</p>
+                    <div class="social-links">
+                        <a href="#" title="Twitter"><i>X</i></a>
+                        <a href="#" title="Facebook">FB</a>
+                        <a href="#" title="LinkedIn">IN</a>
+                        <a href="#" title="YouTube">YT</a>
+                    </div>
+                    <p>Subscribe to our newsletter for weekly market updates and investment tips.</p>
+                    <div class="newsletter">
+                        <input type="email" placeholder="Your email address">
+                        <button class="btn btn-primary">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <h3>Send Us a Message</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="faq">
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>How do I create an account?</h4>
+                <p>Click on the "Register" button in the top right corner of any page and fill out the registration form with your details.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Is there a mobile app available?</h4>
+                <p>Yes, Screener Pro is available on both iOS and Android platforms. You can download it from the respective app stores.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What subscription plans do you offer?</h4>
+                <p>We offer Basic (free), Pro, and Premium plans with varying features. Visit our Pricing page for detailed comparisons.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sign In</h2>
+                <span class="close-btn" onclick="hideModal('login-modal')">&times;</span>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="hideModal('login-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signup-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <span class="close-btn" onclick="hideModal('signup-modal')">&times;</span>
+            </div>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm">Confirm Password</label>
+                    <input type="password" id="signup-confirm" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="hideModal('signup-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Stock Modal -->
+    <div class="modal" id="add-stock-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Stock to Watchlist</h2>
+                <span class="close-btn" onclick="hideModal('add-stock-modal')">&times;</span>
+            </div>
+            <form id="add-stock-form">
+                <div class="form-group">
+                    <label for="stock-symbol">Stock Symbol</label>
+                    <input type="text" id="stock-symbol" placeholder="e.g. RELIANCE, TCS" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock-exchange">Exchange</label>
+                    <input type="text" id="stock-exchange" placeholder="e.g. NSE, BSE" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="hideModal('add-stock-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Holding Modal -->
+    <div class="modal" id="add-holding-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Investment to Portfolio</h2>
+                <span class="close-btn" onclick="hideModal('add-holding-modal')">&times;</span>
+            </div>
+            <form id="add-holding-form">
+                <div class="form-group">
+                    <label for="holding-symbol">Stock Symbol</label>
+                    <input type="text" id="holding-symbol" placeholder="e.g. RELIANCE, TCS" required>
+                </div>
+                <div class="form-group">
+                    <label for="holding-quantity">Quantity</label>
+                    <input type="number" id="holding-quantity" required>
+                </div>
+                <div class="form-group">
+                    <label for="holding-price">Average Purchase Price</label>
+                    <input type="number" step="0.01" id="holding-price" required>
+                </div>
+                <div class="form-group">
+                    <label for="holding-date">Purchase Date</label>
+                    <input type="date" id="holding-date" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="hideModal('add-holding-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add to Portfolio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Screener Pro</h3>
+                <ul>
+                    <li>About Us</li>
+                    <li>Features</li>
+                    <li>Pricing</li>
+                    <li>Testimonials</li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li>Blog</li>
+                    <li>Guides</li>
+                    <li>Webinars</li>
+                    <li>Help Center</li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <ul>
+                    <li>Terms of Service</li>
+                    <li>Privacy Policy</li>
+                    <li>Cookie Policy</li>
+                    <li>Disclaimer</li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <ul>
+                    <li>Contact Us</li>
+                    <li>Careers</li>
+                    <li>Press</li>
+                    <li>Partners</li>
+                </ul>
+                <div class="social-links">
+                    <a href="#" title="Twitter"><i>X</i></a>
+                    <a href="#" title="Facebook">FB</a>
+                    <a href="#" title="LinkedIn">IN</a>
+                    <a href="#" title="YouTube">YT</a>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Screener Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // ======================
+        // APPLICATION INITIALIZATION
+        // ======================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize components
+            initializeStockTable();
+            simulateRealTimeUpdates();
+            setupWatchlist();
+            initCharts();
+            makeTablesResponsive();
+            initWatchlistDragDrop();
+            
+            // Set up event listeners
+            document.getElementById('stock-search')?.addEventListener('input', searchStocks);
+            document.getElementById('sector-filter')?.addEventListener('change', searchStocks);
+            document.getElementById('price-filter')?.addEventListener('change', searchStocks);
+            document.getElementById('market-cap-filter')?.addEventListener('change', searchStocks);
+            
+            // Form submissions
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('signup-form').addEventListener('submit', handleSignup);
+            document.getElementById('add-stock-form').addEventListener('submit', handleAddStock);
+            document.getElementById('add-holding-form').addEventListener('submit', handleAddHolding);
+            
+            // Check for saved theme
+            const savedTheme = localStorage.getItem('theme') || 
+                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+            
+            // Initialize connection status
+            updateConnectionStatus(true);
+        });
+
+        // ======================
+        // STOCK DATA MANAGEMENT
+        // ======================
+        const stocks = [
+            {
+                symbol: "RELIANCE",
+                name: "Reliance Industries",
+                price: 2845.50,
+                change: 42.75,
+                changePercent: 1.52,
+                volume: 3200000,
+                marketCap: 19200000000000,
+                sector: "Conglomerate"
+            },
+            {
+                symbol: "TCS",
+                name: "Tata Consultancy Services",
+                price: 3712.30,
+                change: -28.45,
+                changePercent: -0.76,
+                volume: 1800000,
+                marketCap: 14500000000000,
+                sector: "IT"
+            },
+            {
+                symbol: "HDFCBANK",
+                name: "HDFC Bank",
+                price: 1567.80,
+                change: 12.30,
+                changePercent: 0.79,
+                volume: 2500000,
+                marketCap: 9800000000000,
+                sector: "Banking"
+            },
+            {
+                symbol: "INFY",
+                name: "Infosys",
+                price: 1482.60,
+                change: 5.75,
+                changePercent: 0.39,
+                volume: 1200000,
+                marketCap: 6300000000000,
+                sector: "IT"
+            },
+            {
+                symbol: "BHARTIARTL",
+                name: "Bharti Airtel",
+                price: 918.45,
+                change: -7.20,
+                changePercent: -0.78,
+                volume: 1500000,
+                marketCap: 5200000000000,
+                sector: "Telecom"
+            },
+            {
+                symbol: "HINDUNILVR",
+                name: "Hindustan Unilever",
+                price: 2456.75,
+                change: 15.25,
+                changePercent: 0.62,
+                volume: 850000,
+                marketCap: 5800000000000,
+                sector: "Consumer"
+            },
+            {
+                symbol: "ITC",
+                name: "ITC Limited",
+                price: 425.60,
+                change: 3.45,
+                changePercent: 0.82,
+                volume: 3200000,
+                marketCap: 5300000000000,
+                sector: "Consumer"
+            },
+            {
+                symbol: "ICICIBANK",
+                name: "ICICI Bank",
+                price: 987.25,
+                change: 8.75,
+                changePercent: 0.89,
+                volume: 1800000,
+                marketCap: 6800000000000,
+                sector: "Banking"
+            },
+            {
+                symbol: "KOTAKBANK",
+                name: "Kotak Mahindra Bank",
+                price: 1785.40,
+                change: -12.60,
+                changePercent: -0.70,
+                volume: 750000,
+                marketCap: 3500000000000,
+                sector: "Banking"
+            },
+            {
+                symbol: "LT",
+                name: "Larsen & Toubro",
+                price: 3256.80,
+                change: 45.25,
+                changePercent: 1.41,
+                volume: 650000,
+                marketCap: 2300000000000,
+                sector: "Construction"
+            },
+            {
+                symbol: "SBIN",
+                name: "State Bank of India",
+                price: 645.75,
+                change: 7.25,
+                changePercent: 1.14,
+                volume: 4200000,
+                marketCap: 5700000000000,
+                sector: "Banking"
+            },
+            {
+                symbol: "ASIANPAINT",
+                name: "Asian Paints",
+                price: 3125.50,
+                change: -25.75,
+                changePercent: -0.82,
+                volume: 350000,
+                marketCap: 3000000000000,
+                sector: "Consumer"
+            },
+            {
+                symbol: "MARUTI",
+                name: "Maruti Suzuki",
+                price: 9875.25,
+                change: 125.50,
+                changePercent: 1.29,
+                volume: 280000,
+                marketCap: 2900000000000,
+                sector: "Automobile"
+            },
+            {
+                symbol: "ONGC",
+                name: "Oil & Natural Gas Corp",
+                price: 187.25,
+                change: 2.45,
+                changePercent: 1.33,
+                volume: 5200000,
+                marketCap: 2400000000000,
+                sector: "Energy"
+            },
+            {
+                symbol: "SUNPHARMA",
+                name: "Sun Pharmaceutical",
+                price: 1256.80,
+                change: -15.25,
+                changePercent: -1.20,
+                volume: 950000,
+                marketCap: 3000000000000,
+                sector: "Pharmaceutical"
+            },
+            {
+                symbol: "TITAN",
+                name: "Titan Company",
+                price: 3256.75,
+                change: 45.25,
+                changePercent: 1.41,
+                volume: 350000,
+                marketCap: 2900000000000,
+                sector: "Consumer"
+            },
+            {
+                symbol: "WIPRO",
+                name: "Wipro Limited",
+                price: 456.25,
+                change: 3.25,
+                changePercent: 0.72,
+                volume: 2800000,
+                marketCap: 2500000000000,
+                sector: "IT"
+            },
+            {
+                symbol: "ADANIPORTS",
+                name: "Adani Ports",
+                price: 875.50,
+                change: 12.25,
+                changePercent: 1.42,
+                volume: 1800000,
+                marketCap: 1900000000000,
+                sector: "Infrastructure"
+            },
+            {
+                symbol: "BAJFINANCE",
+                name: "Bajaj Finance",
+                price: 7256.75,
+                change: -85.25,
+                changePercent: -1.16,
+                volume: 250000,
+                marketCap: 4400000000000,
+                sector: "Finance"
+            },
+            {
+                symbol: "HCLTECH",
+                name: "HCL Technologies",
+                price: 1256.80,
+                change: 15.25,
+                changePercent: 1.23,
+                volume: 1200000,
+                marketCap: 3500000000000,
+                sector: "IT"
+            }
+        ];
+
+        // Format large numbers
+        function formatNumber(num) {
+            if (num >= 1000000000000) {
+                return (num / 1000000000000).toFixed(2) + 'T';
+            }
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(2) + 'B';
+            }
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            }
+            return num.toString();
+        }
+
+        // Initialize the stock table
+        function initializeStockTable() {
+            const tableBody = document.querySelector('#stock-data');
+            
+            if (tableBody) {
+                tableBody.innerHTML = stocks.map(stock => `
+                    <tr data-symbol="${stock.symbol}" data-sector="${stock.sector}">
+                        <td data-label="Symbol">${stock.symbol}</td>
+                        <td data-label="Name">${stock.name}</td>
+                        <td class="price" data-label="Price">${stock.price.toFixed(2)}</td>
+                        <td class="${stock.change >= 0 ? 'positive' : 'negative'}" data-label="Change">
+                            ${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}
+                        </td>
+                        <td class="${stock.changePercent >= 0 ? 'positive' : 'negative'}" data-label="% Change">
+                            ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                        </td>
+                        <td data-label="Volume">${formatNumber(stock.volume)}</td>
+                        <td data-label="Market Cap">${formatNumber(stock.marketCap)}</td>
+                        <td data-label="Sector">${stock.sector}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Simulate real-time price updates
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                const rows = document.querySelectorAll('#stock-data tr, .stock-table tbody tr');
+                
+                rows.forEach(row => {
+                    const priceCell = row.querySelector('.price');
+                    const changeCell = row.querySelector('td:nth-child(4)');
+                    const percentCell = row.querySelector('td:nth-child(5)');
+                    
+                    if (priceCell && changeCell && percentCell) {
+                        // Get current values
+                        let price = parseFloat(priceCell.textContent);
+                        let change = parseFloat(changeCell.textContent);
+                        
+                        // Generate random price movement (-0.5% to +0.5%)
+                        const movement = (Math.random() - 0.5) * 0.005;
+                        const newPrice = price * (1 + movement);
+                        const newChange = change + (newPrice - price);
+                        const newChangePercent = (newChange / price) * 100;
+                        
+                        // Update cells
+                        priceCell.textContent = newPrice.toFixed(2);
+                        changeCell.textContent = (newChange >= 0 ? '+' : '') + newChange.toFixed(2);
+                        percentCell.textContent = (newChangePercent >= 0 ? '+' : '') + newChangePercent.toFixed(2) + '%';
+                        
+                        // Update classes for color coding
+                        changeCell.className = newChange >= 0 ? 'positive' : 'negative';
+                        percentCell.className = newChangePercent >= 0 ? 'positive' : 'negative';
+                        
+                        // Add animation class
+                        priceCell.classList.add(movement > 0 ? 'price-up' : 'price-down');
+                        setTimeout(() => {
+                            priceCell.classList.remove('price-up', 'price-down');
+                        }, 500);
+                    }
+                });
+                
+                // Update portfolio values if on portfolio page
+                if (document.getElementById('portfolio-page').style.display === 'block') {
+                    updatePortfolioValues();
+                }
+                
+                // Update latency indicator
+                const latency = Math.floor(Math.random() * 80) + 20;
+                document.getElementById('latency-indicator').textContent = `${latency}ms`;
+            }, 2000);
+        }
+
+        // ======================
+        // WATCHLIST MANAGEMENT
+        // ======================
+        const stockSubscriptions = new Set();
+
+        function setupWatchlist() {
+            // Simulate loading watchlist from server
+            setTimeout(() => {
+                const watchlist = ['RELIANCE', 'TCS', 'HDFCBANK', 'BHARTIARTL', 'INFY'];
+                watchlist.forEach(symbol => {
+                    subscribeToStock(symbol);
+                    addWatchlistRow(symbol);
+                });
+            }, 1500);
+        }
+
+        function addWatchlistRow(symbol) {
+            const watchlistTable = document.getElementById('watchlist-items');
+            if (watchlistTable) {
+                const newRow = watchlistTable.insertRow();
+                newRow.dataset.symbol = symbol;
+                newRow.innerHTML = `
+                    <td>${symbol}</td>
+                    <td>Loading...</td>
+                    <td class="neutral">...</td>
+                    <td class="neutral">...</td>
+                    <td>Loading...</td>
+                    <td>Loading...</td>
+                    <td><button class="btn btn-outline" onclick="removeFromWatchlist('${symbol}')">Remove</button></td>
+                `;
+            }
+        }
+
+        function subscribeToStock(symbol) {
+            if (!stockSubscriptions.has(symbol)) {
+                stockSubscriptions.add(symbol);
+                // In a real app, you would send subscription to server
+                console.log(`Subscribed to ${symbol}`);
+            }
+        }
+
+        function removeFromWatchlist(symbol) {
+            stockSubscriptions.delete(symbol);
+            const row = document.querySelector(`#watchlist-items tr[data-symbol="${symbol}"]`);
+            if (row) row.remove();
+            
+            // In a real app, you would send unsubscribe to server
+            console.log(`Unsubscribed from ${symbol}`);
+            
+            showToast(`${symbol} removed from watchlist`, 'success');
+        }
+
+        // ======================
+        // PORTFOLIO MANAGEMENT
+        // ======================
+        function updatePortfolioValues() {
+            const portfolioRows = document.querySelectorAll('#portfolio-page .stock-table tbody tr');
+            let totalValue = 0;
+            let totalGainLoss = 0;
+            
+            portfolioRows.forEach(row => {
+                const symbol = row.dataset.symbol;
+                const priceCell = document.querySelector(`[data-symbol="${symbol}"] td:nth-child(3)`);
+                if (!priceCell) return;
+                
+                const currentPrice = parseFloat(priceCell.textContent.replace(/,/g, '')) || 0;
+                const quantity = parseFloat(row.querySelector('td:nth-child(3)').textContent) || 0;
+                const avgPrice = parseFloat(row.querySelector('td:nth-child(4)').textContent.replace(/,/g, '')) || 0;
+                
+                const value = quantity * currentPrice;
+                const gainLoss = value - (quantity * avgPrice);
+                const percentChange = (gainLoss / (quantity * avgPrice)) * 100;
+                
+                row.querySelector('td:nth-child(5)').textContent = currentPrice.toFixed(2);
+                row.querySelector('td:nth-child(6)').textContent = value.toFixed(2);
+                
+                const gainCell = row.querySelector('td:nth-child(7)');
+                gainCell.textContent = (gainLoss >= 0 ? '+' : '') + gainLoss.toFixed(2);
+                gainCell.className = gainLoss >= 0 ? 'positive' : 'negative';
+                
+                const percentCell = row.querySelector('td:nth-child(8)');
+                percentCell.textContent = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
+                percentCell.className = percentChange >= 0 ? 'positive' : 'negative';
+                
+                totalValue += value;
+                totalGainLoss += gainLoss;
+            });
+            
+            // Update summary cards
+            const totalPercentChange = (totalGainLoss / (totalValue - totalGainLoss)) * 100;
+            
+            document.querySelector('#portfolio-page .summary-card:nth-child(1) p').textContent = 
+                '₹' + totalValue.toLocaleString('en-IN');
+                
+            const summaryElement = document.querySelector('#portfolio-page .summary-card:nth-child(2) p');
+            summaryElement.textContent = 
+                (totalGainLoss >= 0 ? '+₹' : '-₹') + Math.abs(totalGainLoss).toFixed(2) + 
+                ' (' + (totalPercentChange >= 0 ? '+' : '') + totalPercentChange.toFixed(2) + '%)';
+            summaryElement.className = totalGainLoss >= 0 ? 'positive' : 'negative';
+        }
+
+        // ======================
+        // UI FUNCTIONS
+        // ======================
+        // Mobile menu toggle
+        function toggleMenu() {
+            const nav = document.querySelector('nav ul');
+            nav.classList.toggle('show');
+        }
+
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+                icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        // Connection status
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connection-status');
+            if (statusElement) {
+                if (connected) {
+                    statusElement.style.backgroundColor = '#27ae60';
+                    statusElement.querySelector('span:last-child').textContent = 'Live';
+                } else {
+                    statusElement.style.backgroundColor = '#e74c3c';
+                    statusElement.querySelector('span:last-child').textContent = 'Offline';
+                }
+            }
+        }
+
+        // Search functionality
+        function searchStocks() {
+            const searchTerm = document.getElementById('stock-search')?.value.toLowerCase();
+            const sectorFilter = document.getElementById('sector-filter')?.value;
+            const priceFilter = document.getElementById('price-filter')?.value;
+            const marketCapFilter = document.getElementById('market-cap-filter')?.value;
+            
+            const rows = document.querySelectorAll('.stock-table tbody tr');
+            
+            rows.forEach(row => {
+                const symbol = row.cells[0].textContent.toLowerCase();
+                const name = row.cells[1].textContent.toLowerCase();
+                const price = parseFloat(row.cells[2].textContent.replace(/,/g, ''));
+                const sector = row.getAttribute('data-sector') || '';
+                const marketCapText = row.cells[6].textContent;
+                let marketCap = 0;
+                
+                // Parse market cap
+                if (marketCapText.includes('T')) {
+                    marketCap = parseFloat(marketCapText) * 100000;
+                } else if (marketCapText.includes('B')) {
+                    marketCap = parseFloat(marketCapText) * 100;
+                } else if (marketCapText.includes('M')) {
+                    marketCap = parseFloat(marketCapText) / 10;
+                } else {
+                    marketCap = parseFloat(marketCapText) / 10000;
+                }
+                
+                const matchesSearch = !searchTerm || symbol.includes(searchTerm) || name.includes(searchTerm);
+                const matchesSector = !sectorFilter || sector === sectorFilter;
+                let matchesPrice = true;
+                let matchesMarketCap = true;
+                
+                if (priceFilter) {
+                    const [min, max] = priceFilter.split('-').map(Number);
+                    matchesPrice = (!min || price >= min) && (!max || price <= max);
+                }
+                
+                if (marketCapFilter) {
+                    const [min, max] = marketCapFilter.split('-').map(Number);
+                    matchesMarketCap = (!min || marketCap >= min) && (!max || marketCap <= max);
+                }
+                
+                row.style.display = matchesSearch && matchesSector && matchesPrice && matchesMarketCap ? '' : 'none';
+            });
+        }
+
+        // Make tables responsive
+        function makeTablesResponsive() {
+            document.querySelectorAll('.stock-table').forEach(table => {
+                if (window.innerWidth <= 600) {
+                    const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent);
+                    table.querySelectorAll('td').forEach((td, index) => {
+                        td.setAttribute('data-label', headers[index % headers.length]);
+                    });
+                }
+            });
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Stock chart on landing page
+            const ctx = document.getElementById('stockChart')?.getContext('2d');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Stock Price',
+                            data: [65, 59, 80, 81, 56, 72],
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Allocation chart on portfolio page
+            const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
+            if (allocCtx) {
+                new Chart(allocCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Technology', 'Banking', 'Consumer', 'Energy', 'Pharmaceutical'],
+                        datasets: [{
+                            data: [35, 25, 20, 10, 10],
+                            backgroundColor: [
+                                '#3498db',
+                                '#2ecc71',
+                                '#f1c40f',
+                                '#e74c3c',
+                                '#9b59b6'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize drag and drop for watchlist
+        function initWatchlistDragDrop() {
+            const watchlist = document.getElementById('watchlist-items');
+            if (watchlist) {
+                new Sortable(watchlist, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    onEnd: function() {
+                        console.log('Watchlist order changed');
+                        // Here you would save the new order to your database
+                    }
+                });
+            }
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }, 100);
+        }
+
+        // ======================
+        // PAGE NAVIGATION
+        // ======================
+        function showLandingPage() {
+            document.getElementById('landing-page').style.display = 'block';
+            document.getElementById('portfolio-page').style.display = 'none';
+            document.getElementById('watchlist-page').style.display = 'none';
+            document.getElementById('contact-page').style.display = 'none';
+            document.querySelector('nav ul').classList.remove('show');
+        }
+        
+        function showPortfolio() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('portfolio-page').style.display = 'block';
+            document.getElementById('watchlist-page').style.display = 'none';
+            document.getElementById('contact-page').style.display = 'none';
+            document.querySelector('nav ul').classList.remove('show');
+            updatePortfolioValues();
+        }
+        
+        function showWatchlist() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('portfolio-page').style.display = 'none';
+            document.getElementById('watchlist-page').style.display = 'block';
+            document.getElementById('contact-page').style.display = 'none';
+            document.querySelector('nav ul').classList.remove('show');
+        }
+        
+        function showContact() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('portfolio-page').style.display = 'none';
+            document.getElementById('watchlist-page').style.display = 'none';
+            document.getElementById('contact-page').style.display = 'block';
+            document.querySelector('nav ul').classList.remove('show');
+        }
+        
+        function showScreener() {
+            showLandingPage();
+            document.querySelector('.screener').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ======================
+        // MODAL FUNCTIONS
+        // ======================
+        function showLoginModal() {
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+        
+        function showSignupModal() {
+            document.getElementById('signup-modal').style.display = 'flex';
+        }
+        
+        function showAddStockModal() {
+            document.getElementById('add-stock-modal').style.display = 'flex';
+        }
+        
+        function showAddHoldingModal() {
+            document.getElementById('add-holding-modal').style.display = 'flex';
+        }
+        
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // ======================
+        // FORM HANDLERS
+        // ======================
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // In a real app, you would authenticate with your backend
+            console.log('Login attempt with:', email, password);
+            showToast('Login functionality would connect to backend', 'info');
+            hideModal('login-modal');
+        }
+        
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            
+            if (password !== confirm) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            // In a real app, you would register with your backend
+            console.log('Signup attempt with:', name, email, password);
+            showToast('Registration would connect to backend', 'info');
+            hideModal('signup-modal');
+        }
+        
+        function handleAddStock(e) {
+            e.preventDefault();
+            const symbol = document.getElementById('stock-symbol').value.toUpperCase();
+            const exchange = document.getElementById('stock-exchange').value;
+            
+            if (!symbol || !exchange) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+            
+            // Add to watchlist table
+            const watchlistTable = document.getElementById('watchlist-items');
+            if (watchlistTable) {
+                const newRow = watchlistTable.insertRow();
+                newRow.dataset.symbol = symbol;
+                newRow.innerHTML = `
+                    <td>${symbol}</td>
+                    <td>1,234.56</td>
+                    <td class="positive">+12.34</td>
+                    <td class="positive">+1.01%</td>
+                    <td>1.2M</td>
+                    <td>5.4T</td>
+                    <td><button class="btn btn-outline" onclick="removeFromWatchlist('${symbol}')">Remove</button></td>
+                `;
+                
+                subscribeToStock(symbol);
+                showToast(`${symbol} added to watchlist`, 'success');
+                hideModal('add-stock-modal');
+            }
+        }
+        
+        function handleAddHolding(e) {
+            e.preventDefault();
+            const symbol = document.getElementById('holding-symbol').value.toUpperCase();
+            const quantity = parseFloat(document.getElementById('holding-quantity').value);
+            const price = parseFloat(document.getElementById('holding-price').value);
+            const date = document.getElementById('holding-date').value;
+            
+            if (!symbol || isNaN(quantity) || isNaN(price) || !date) {
+                showToast('Please fill all fields with valid data', 'error');
+                return;
+            }
+            
+            // In a real app, you would save to portfolio
+            console.log('Adding to portfolio:', {symbol, quantity, price, date});
+            showToast('Portfolio addition would connect to backend', 'info');
+            hideModal('add-holding-modal');
+            
+            // For demo purposes, update the UI
+            const portfolioTable = document.querySelector('#portfolio-page .stock-table tbody');
+            if (portfolioTable) {
+                const newRow = portfolioTable.insertRow();
+                newRow.dataset.symbol = symbol;
+                newRow.innerHTML = `
+                    <td data-label="Symbol">${symbol}</td>
+                    <td data-label="Name">Loading...</td>
+                    <td data-label="Quantity">${quantity}</td>
+                    <td data-label="Avg. Cost">${price.toFixed(2)}</td>
+                    <td data-label="Current Price">Loading...</td>
+                    <td data-label="Value">Loading...</td>
+                    <td data-label="Gain/Loss" class="neutral">...</td>
+                    <td data-label="% Change" class="neutral">...</td>
+                `;
+                
+                // Simulate loading stock data
+                setTimeout(() => {
+                    const stock = stocks.find(s => s.symbol === symbol) || {
+                        name: symbol,
+                        price: price * (1 + (Math.random() * 0.2 - 0.1)), // Random price around purchase
+                        change: 0,
+                        changePercent: 0
+                    };
+                    
+                    newRow.querySelector('td:nth-child(2)').textContent = stock.name;
+                    newRow.querySelector('td:nth-child(5)').textContent = stock.price.toFixed(2);
+                    
+                    const value = quantity * stock.price;
+                    const gainLoss = value - (quantity * price);
+                    const percentChange = (gainLoss / (quantity * price)) * 100;
+                    
+                    newRow.querySelector('td:nth-child(6)').textContent = value.toFixed(2);
+                    
+                    const gainCell = newRow.querySelector('td:nth-child(7)');
+                    gainCell.textContent = (gainLoss >= 0 ? '+' : '') + gainLoss.toFixed(2);
+                    gainCell.className = gainLoss >= 0 ? 'positive' : 'negative';
+                    
+                    const percentCell = newRow.querySelector('td:nth-child(8)');
+                    percentCell.textContent = (percentChange >= 0 ? '+' : '') + percentChange.toFixed(2) + '%';
+                    percentCell.className = percentChange >= 0 ? 'positive' : 'negative';
+                    
+                    updatePortfolioValues();
+                }, 1000);
+            }
+        }
+
+        // ======================
+        // UTILITY FUNCTIONS
+        // ======================
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Resize event handler
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                makeTablesResponsive();
+            }, 250);
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.screener-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all tab buttons
+            document.querySelectorAll('.screener-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate selected tab button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
